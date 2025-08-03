@@ -128,6 +128,16 @@
                  class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full" required>
         </div>
 
+        <!-- Campo Papel -->
+        <div>
+          <label for="papel" class="block text-gray-700 font-semibold mb-2">Papel:</label>
+          <select name="papel" id="papel" onchange="toggleCPF()"
+                  class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full">
+            <option value="admin">Admin</option>
+            <option value="gestor">gestor</option>
+          </select>
+        </div>
+        
         <!-- Campo CPF -->
         <div>
           <label for="cpf" class="block text-gray-700 font-semibold mb-2">CPF:</label>
@@ -152,15 +162,7 @@
                  class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full" required>
         </div>
 
-        <!-- Campo Papel -->
-        <div>
-          <label for="papel" class="block text-gray-700 font-semibold mb-2">Papel:</label>
-          <select name="papel" id="papel" onchange="toggleCPF()"
-                  class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full">
-            <option value="admin">Admin</option>
-            <option value="auditor">Auditor</option>
-          </select>
-        </div>
+        
 
         <!-- Botão Submeter -->
         <div>

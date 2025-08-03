@@ -21,8 +21,9 @@ def fechar_conexao(e=None):
 # Função para inicializar o banco de dados (criar as tabelas)
 def inicializar_banco():
     db = obter_conexao()
-    db.execute("drop table documentos")
-    db.execute("drop table usuarios")
+    #db.execute("insert into usuarios(nome_usuario,senha,papel) values ('admin','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin')")
+    #db.execute("drop table documentos")
+    #db.execute("drop table usuarios")
     db.execute('''
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,6 +106,11 @@ def salvar_documento(nome_arquivo, caminho_arquivo, hash, usuario_id, categoria,
     db.commit()
 
 # Função para verificar se hash já existe
-def hash_existe(hash_arquivo):
+def hash_existe(hash_doc):
     db = obter_conexao()
-    return db.execute("SELECT id FROM documentos WHERE hash = ?", (hash_arquivo,)).fetchone() is not None
+    resultado = db.execute("SELECT status FROM documentos WHERE hash = ?", (hash_doc,)).fetchone()
+    
+    if resultado:
+        return resultado[0]  # 'validado' ou 'pendente'
+    return None
+

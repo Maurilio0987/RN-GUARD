@@ -90,8 +90,6 @@
               <th class="text-left px-4 py-3">Nome</th>
               <th class="text-left px-4 py-3">Categoria</th>
               <th class="text-left px-4 py-3">Data do Documento</th>
-              <th class="text-left px-4 py-3">Aprovações</th>
-              <th class="text-left px-4 py-3">Status da Aprovação</th>
               <th class="text-left px-4 py-3">Download</th>
             </tr>
           </thead>
@@ -102,25 +100,6 @@
                 <td class="px-4 py-2">{{ doc.nome_arquivo }}</td>
                 <td class="px-4 py-2">{{ doc.categoria }}</td>
                 <td class="px-4 py-2">{{ doc.data_documento }}</td>
-                <td class="px-4 py-2">
-                  <!-- Aprovações como Barra -->
-                  <div class="relative pt-1">
-                    <div class="flex mb-2 items-center justify-between">
-                      <div class="text-sm font-semibold">{{ doc.aprovacoes|length }} de 5</div>
-                    </div>
-                    <div class="flex mb-2">
-                      <div class="relative flex flex-col w-full">
-                        <div class="flex mb-2">
-                          <div class="w-full bg-gray-300 rounded-full h-2.5">
-                            <div class="bg-blue-500 h-2.5 rounded-full"
-                                 style="width: {{ (doc.aprovacoes|length / 5) * 100 }}%"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-4 py-2">{{ doc.status }}</td>
                 <td class="px-4 py-2">
                   <a href="{{ url_for('baixar_documento', doc_id=doc.id) }}"
                      class="text-secondary hover:underline flex items-center space-x-1">
@@ -137,19 +116,18 @@
     {% endif %}
 
     <div class="mt-6">
-      <a href="/" class="text-secondary hover:underline flex items-center space-x-2">
+      <a href="/" class="text-secondary hover:underline flex w-max items-center space-x-2">
         <i class="fas fa-arrow-left"></i><span>Voltar para o início</span>
       </a>
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="bg-white border-t text-gray-800 py-6">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-center">
         <div class="mb-4 md:mb-0">
           <h3 class="text-lg font-semibold mb-1">Portal de Documentos</h3>
-          <p class="text-light text-sm">© 2025 Todos os direitos reservados</p>
+          <p class="text-gray-500 text-sm">© 2025 Todos os direitos reservados</p>
         </div>
         <div class="flex space-x-6">
           <a href="#" class="hover:text-secondary transition duration-200"><i class="fas fa-question-circle"></i> Ajuda</a>

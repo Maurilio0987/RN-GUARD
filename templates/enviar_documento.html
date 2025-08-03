@@ -33,7 +33,7 @@
         <h1 class="text-2xl font-bold text-gray-800">RN GUARD - Auditor</h1>
       </div>
       <div class="mt-6 text-center">
-        <a href="/dashboard/auditor" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+        <a href="/dashboard/gestor" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
           <i class="fas fa-arrow-left mr-1"></i>Voltar para o início
         </a>
       </div>
@@ -65,7 +65,7 @@
         {% endif %}
       {% endwith %}
 
-      <form action="/dashboard/auditor/enviar_documento" method="post" enctype="multipart/form-data" class="space-y-4">
+      <form action="/dashboard/gestor/enviar_documento" method="post" enctype="multipart/form-data" class="space-y-4">
         <div>
           <label for="nome_personalizado" class="block text-sm font-medium text-gray-700">Nome do arquivo (opcional)</label>
           <input type="text" name="nome_personalizado" id="nome_personalizado"

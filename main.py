@@ -108,8 +108,8 @@ def dashboard():
     print(papel)
     if papel == 'admin':
         return redirect(url_for('dashboard_admin'))
-    elif papel == 'auditor':
-        return redirect(url_for('dashboard_auditor'))
+    elif papel == 'gestor':
+        return redirect(url_for('dashboard_gestor'))
     else:
         flash('Você não tem permissão para acessar o painel.', 'danger')
         return redirect(url_for('login'))
@@ -122,12 +122,12 @@ def dashboard_admin():
     return render_template('dashboard_admin.html')
 
 
-@app.route('/dashboard/auditor')
-def dashboard_auditor():
-    if 'usuario_id' not in session or session.get('papel') != 'auditor':
+@app.route('/dashboard/gestor')
+def dashboard_gestor():
+    if 'usuario_id' not in session or session.get('papel') != 'gestor':
         flash('Acesso restrito. Somente auditores podem acessar esta página.', 'danger')
         return redirect(url_for('login'))
-    return render_template('dashboard_auditor.html')
+    return render_template('dashboard_gestor.html')
 
 
 @app.route('/dashboard/admin/cadastrar_conta', methods=["GET", "POST"])
@@ -179,22 +179,22 @@ def excluir_usuario(usuario_id):
     return redirect(url_for('cadastrar_conta'))
 
 
-@app.route('/dashboard/auditor/enviar_documento', methods=["GET", "POST"])
+@app.route('/dashboard/gestor/enviar_documento', methods=["GET", "POST"])
 def enviar_documento():
-    if 'usuario_id' not in session or session.get('papel') != 'auditor':
+    if 'usuario_id' not in session or session.get('papel') != 'gestor':
         flash('Acesso negado.', 'danger')
         return redirect(url_for('login'))
 
     if request.method == "POST":
         if 'arquivo' not in request.files:
             flash('Nenhum arquivo selecionado.', 'warning')
-            return redirect(url_for('dashboard_auditor'))
+            return redirect(url_for('dashboard_gestor'))
 
         arquivo = request.files['arquivo']
 
         if arquivo.filename == '':
             flash('Nome de arquivo inválido.', 'warning')
-            return redirect(url_for('dashboard_auditor'))
+            return redirect(url_for('dashboard_gestor'))
 
         data_documento = request.form.get('data_documento')
         categoria = request.form.get('categoria')
@@ -262,15 +262,14 @@ def visualizar_documentos_categoria(categoria):
 
     documentos = []
     for row in rows:
-        documentos.append({
-            'id': row[0],
-            'nome_arquivo': row[1],
-            'categoria': row[2],
-            'data_documento': row[3],
-            'data_envio': row[4],
-            'status': row[5],
-            'aprovacoes': list(map(int, json.loads(row[6]))) if row[6] else []
-        })
+        if row[5] == "Validado":
+            documentos.append({
+                'id': row[0],
+                'nome_arquivo': row[1],
+                'categoria': row[2],
+                'data_documento': row[3],
+                'data_envio': row[4],
+            })
         
     return render_template('documentos.html', documentos=documentos)
 
@@ -306,24 +305,26 @@ def comparar_documento():
         arquivo.save(caminho)
 
         hash_doc = db.calcular_hash_arquivo(caminho)
-        existe = db.hash_existe(hash_doc)
+        status = db.hash_existe(hash_doc)  # agora retorna 'validado', 'pendente' ou None
 
-        if existe:
+        if status == 'Validado':
             flash('✅ Documento validado: existe no sistema e é considerado legítimo.', 'success')
+        elif status == 'Pendente':
+            flash('🕓 Documento encontrado, mas ainda está pendente de validação.', 'info')
         else:
             flash('⚠ Documento não encontrado no sistema. Pode ser desconhecido ou potencialmente fraudado.', 'warning')
 
-
-        os.remove(caminho)  # remove arquivo temporário após verificação
+        os.remove(caminho)
         return redirect(url_for('comparar_documento'))
 
     return render_template('comparar_documento.html')
 
-@app.route('/dashboard/auditor/validar_documento')
+
+@app.route('/dashboard/gestor/validar_documento')
 def validar_documento():
     return render_template('validar_documentos.html', categorias=categorias)
 
-@app.route('/dashboard/auditor/validar_documentos/<categoria>')
+@app.route('/dashboard/gestor/validar_documentos/<categoria>')
 def validar_documentos_categoria(categoria):
     conn = sqlite3.connect('bancodedados.db')
     cursor = conn.cursor()
