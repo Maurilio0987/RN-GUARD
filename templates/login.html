@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - RN GUARD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ffffff',
+            secondary: '#2563eb',
+            light: '#ecf0f1',
+            dark: '#2c3e50',
+            accent: '#e74c3c',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <header class="bg-white shadow-md border-b">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-shield-alt text-2xl text-secondary"></i>
+        <h1 class="text-2xl font-bold text-gray-800">RN GUARD</h1>
+      </div>
+      <div>
+        <a href="{{ url_for('index') }}"
+           class="bg-secondary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center space-x-2">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Voltar para documentos</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Login Card -->
+  <main class="flex-grow flex items-center justify-center">
+    <div class="w-full max-w-md px-6 py-8 fade-in">
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+        <!-- Card Header -->
+        <div class="bg-gradient-to-r from-secondary to-blue-600 text-white py-6 px-8 text-center">
+          <h2 class="text-2xl font-bold"><i class="fas fa-file-contract mr-2"></i> Acesso ao Sistema</h2>
+          <p class="text-light text-sm mt-1">Sistema de Auditoria RN GUARD</p>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="px-8 pt-6">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="flash-message mb-4 p-3 rounded-md text-sm fade-in
+                  {% if category == 'success' %}bg-green-100 text-green-700
+                  {% elif category == 'danger' %}bg-red-100 text-red-700
+                  {% elif category == 'warning' %}bg-yellow-100 text-yellow-700
+                  {% else %}bg-blue-100 text-blue-700{% endif %}">
+                  <i class="fas
+                    {% if category == 'success' %}fa-check-circle
+                    {% elif category == 'danger' %}fa-exclamation-circle
+                    {% elif category == 'warning' %}fa-exclamation-triangle
+                    {% else %}fa-info-circle{% endif %} mr-2"></i>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" class="px-8 pt-2 pb-8">
+          <div class="mb-4 relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-user text-gray-400"></i>
+            </div>
+            <input type="text" name="nome_usuario" placeholder="Nome de usuário" required
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary">
+          </div>
+
+          <div class="mb-6 relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-lock text-gray-400"></i>
+            </div>
+            <input type="password" name="senha" placeholder="Senha" required
+              class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary">
+          </div>
+
+          <button type="submit"
+            class="w-full bg-secondary hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
+            <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+          </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="bg-white border-t border-gray-200 px-8 py-4 text-center">
+          <p class="text-gray-500 text-sm">
+            © 2025 RN GUARD - Sistema de Auditoria
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t text-gray-800 py-4 text-center text-sm">
+    <p>Precisa de ajuda? <a href="#" class="text-secondary hover:underline">Fale conosco</a></p>
+  </footer>
+
+  <script>
+    // Auto-dismiss flash messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function () {
+      const flashMessages = document.querySelectorAll('.flash-message');
+      flashMessages.forEach(message => {
+        setTimeout(() => {
+          message.style.opacity = '0';
+          setTimeout(() => message.remove(), 500);
+        }, 5000);
+      });
+    });
+  </script>
+</body>
+</html>

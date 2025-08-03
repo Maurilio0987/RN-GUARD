@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Documentos Enviados</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ffffff',
+            secondary: '#2563eb',
+            light: '#ecf0f1',
+            dark: '#2c3e50',
+            accent: '#e74c3c',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <header class="bg-white shadow-lg border-b">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-shield-alt text-2xl text-secondary"></i>
+        <h1 class="text-2xl font-bold text-gray-800">RN GUARD</h1>
+      </div>
+      <a href="{{ url_for('dashboard') }}"
+         class="bg-secondary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center space-x-2">
+        <i class="fas fa-sign-in-alt"></i>
+        <span>Voltar</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8 flex-grow fade-in">
+    <h2 class="text-2xl font-bold text-dark mb-6">Documentos com validação pendente</h2>
+    <!-- Filtros de busca -->
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <input type="text" id="filtro-nome" placeholder="Buscar por nome"
+             class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary">
+
+      <input type="date" id="filtro-data"
+             class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-secondary">
+
+      <button onclick="aplicarFiltro()" class="w-full bg-secondary hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
+        <i class="fas fa-search mr-1"></i> Filtrar
+      </button>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+        <ul class="mb-6 space-y-4">
+          {% for categoria, mensagem in mensagens %}
+            <li class="p-4 rounded-lg border 
+                       {% if categoria == 'success' %} bg-green-100 text-green-800 border-green-300 
+                       {% elif categoria == 'error' %} bg-red-100 text-red-800 border-red-300 
+                       {% else %} bg-blue-100 text-blue-800 border-blue-300 {% endif %}">
+              {{ mensagem }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Tabela de Documentos -->
+    {% if documentos %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg">
+          <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
+            <tr>
+              <th class="text-left px-4 py-3">ID</th>
+              <th class="text-left px-4 py-3">Nome</th>
+              <th class="text-left px-4 py-3">Categoria</th>
+              <th class="text-left px-4 py-3">Data do Documento</th>
+              <th class="text-left px-4 py-3">Aprovações</th>
+              <th class="text-left px-4 py-3">Status da Aprovação</th>
+              <th class="text-left px-4 py-3">Download</th>
+              <th class="text-left px-4 py-3">Aprovar Documento</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-700 text-sm">
+            {% for doc in documentos %}
+              <tr class="border-t">
+                <td class="px-4 py-2">{{ doc.id }}</td>
+                <td class="px-4 py-2">{{ doc.nome_arquivo }}</td>
+                <td class="px-4 py-2">{{ doc.categoria }}</td>
+                <td class="px-4 py-2">{{ doc.data_documento }}</td>
+                <td class="px-4 py-2">
+                  <!-- Aprovações como Barra -->
+                  <div class="relative pt-1">
+                    <div class="flex mb-2 items-center justify-between">
+                      <div class="text-sm font-semibold">{{ doc.aprovacoes|length }} de 5</div>
+                    </div>
+                    <div class="flex mb-2">
+                      <div class="relative flex flex-col w-full">
+                        <div class="flex mb-2">
+                          <div class="w-full bg-gray-300 rounded-full h-2.5">
+                            <div class="bg-blue-500 h-2.5 rounded-full"
+                                 style="width: {{ (doc.aprovacoes|length / 5) * 100 }}%"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-2">{{ doc.status }}</td>
+                <td class="px-4 py-2">
+                  <a href="{{ url_for('baixar_documento', doc_id=doc.id) }}"
+                     class="text-secondary hover:underline flex items-center space-x-1">
+                    <i class="fas fa-download"></i><span>Baixar</span>
+                  </a>
+                </td>
+                <td class="px-4 py-2">
+                  {% if user_id not in doc.aprovacoes %}
+                    <form action="{{ url_for('aprovar_documento', doc_id=doc.id) }}" method="post" class="mt-2">
+                      <button type="submit"
+                              class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-sm flex items-center space-x-1">
+                        <i class="fas fa-check"></i><span>Aprovar</span>
+                      </button>
+                    </form>
+                  {% else %}
+                    <div class="text-m text-green-500 mt-1">Você já aprovou</div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-gray-600 mt-4">Nenhum documento encontrado.</p>
+    {% endif %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t text-gray-800 py-6">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <h3 class="text-lg font-semibold mb-1">Portal de Documentos</h3>
+          <p class="text-light text-sm">© 2025 Todos os direitos reservados</p>
+        </div>
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-secondary transition duration-200"><i class="fas fa-question-circle"></i> Ajuda</a>
+          <a href="#" class="hover:text-secondary transition duration-200"><i class="fas fa-envelope"></i> Contato</a>
+          <a href="#" class="hover:text-secondary transition duration-200"><i class="fas fa-shield-alt"></i> Privacidade</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    {% for doc in documentos %}
+      console.log("{{doc}}")
+    {% endfor %}
+    function aplicarFiltro() {
+        const nomeFiltro = document.getElementById('filtro-nome').value.toLowerCase();
+        const dataFiltro = document.getElementById('filtro-data').value;
+
+        const linhas = document.querySelectorAll('table tbody tr');
+
+        linhas.forEach(linha => {
+        const nome = linha.children[1].textContent.toLowerCase();
+        const data = linha.children[3].textContent;
+
+        const nomeCorresponde = nome.includes(nomeFiltro);
+        const dataCorresponde = dataFiltro === '' || data === dataFiltro;
+
+        if (nomeCorresponde && dataCorresponde) {
+            linha.style.display = '';
+        } else {
+            linha.style.display = 'none';
+        }
+        });
+    }
+  </script>
+
+</body>
+</html>

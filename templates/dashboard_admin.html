@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel de Administração - RN GUARD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ffffff',
+            secondary: '#2563eb',
+            light: '#ecf0f1',
+            dark: '#2c3e50',
+            accent: '#e74c3c',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <!-- Header/Navbar -->
+  <header class="bg-white shadow-lg border-b">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-shield-alt text-2xl text-secondary"></i>
+        <h1 class="text-2xl font-bold text-gray-800">RN GUARD</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="/logout"
+           class="bg-secondary hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center space-x-2">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Sair</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto px-4 py-8 fade-in">
+    <div class="mb-8 text-center">
+      <h2 class="text-2xl font-bold text-dark">Bem-vindo!</h2>
+      <p class="text-gray-600 mt-2">Este é o painel de administração do sistema RN GUARD.</p>
+    </div>
+
+    <!-- Cards de Ações -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <a href="/dashboard/admin/cadastrar_conta"
+         class="card-hover bg-white rounded-xl p-6 flex flex-col items-center text-center border border-gray-100 cursor-pointer">
+        <div class="w-16 h-16 rounded-full bg-secondary bg-opacity-10 flex items-center justify-center mb-4 text-secondary">
+          <i class="fas fa-user-plus text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-bold text-dark mb-1">Cadastrar Conta</h3>
+        <p class="text-sm text-gray-500">Adicione novas contas de usuário ao sistema.</p>
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t text-gray-800 py-6">
+    <div class="container mx-auto px-4 text-center text-sm">
+      <p>© 2025 RN GUARD - Sistema de Administração</p>
+    </div>
+  </footer>
+</body>
+</html>

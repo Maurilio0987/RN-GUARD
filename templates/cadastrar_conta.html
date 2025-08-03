@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerenciar Usuários - RN GUARD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ffffff',
+            secondary: '#2563eb',
+            light: '#ecf0f1',
+            dark: '#2c3e50',
+            accent: '#e74c3c',
+          }
+        }
+      }
+    }
+
+    function validarCPF(cpf) {
+      const regex = /^(?!000\.000\.000\-00)(\d{3})\.?(\d{3})\.?(\d{3})\-?(\d{2})$/;
+      return regex.test(cpf);
+    }
+
+    function validarFormulario() {
+      const nomeUsuario = document.getElementById('nome_usuario').value;
+      const cpf = document.getElementById('cpf').value;
+      const senha = document.getElementById('senha').value;
+      const confirmarSenha = document.getElementById('confirmar_senha').value;
+      const papel = document.getElementById('papel').value;
+
+      // Validação de CPF, mas somente se o papel não for "admin"
+      if (papel !== 'admin' && !validarCPF(cpf)) {
+        alert('CPF inválido. Por favor, insira um CPF válido.');
+        return false;
+      }
+
+      // Validação de Senha
+      if (senha !== confirmarSenha) {
+        alert('As senhas não coincidem. Por favor, confirme a senha corretamente.');
+        return false;
+      }
+
+      return true;
+    }
+
+
+    // Função para desabilitar o CPF se o papel for 'admin'
+    function toggleCPF() {
+      const papel = document.getElementById('papel').value;
+      const cpfField = document.getElementById('cpf');
+      const cpfHiddenField = document.getElementById('cpf_hidden');
+      
+      if (papel === 'admin') {
+        cpfField.disabled = true; // Desabilita o campo CPF
+        cpfField.value = ''; // Limpa o valor do CPF
+        cpfHiddenField.value = ''; // Define o valor do CPF oculto como vazio
+      } else {
+        cpfField.disabled = false; // Habilita o campo CPF
+        cpfHiddenField.value = cpfField.value; // Define o valor do CPF oculto com o valor do campo CPF
+      }
+    }
+
+    // Chama a função toggleCPF ao carregar a página para definir o estado correto do campo CPF
+    window.onload = toggleCPF;
+  </script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  <!-- Header/Navbar -->
+  <header class="bg-white shadow-lg border-b">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-shield-alt text-2xl text-secondary"></i>
+        <h1 class="text-2xl font-bold text-gray-800">RN GUARD</h1>
+      </div>
+      <div class="mt-1 text-center">
+        <a href="/dashboard/admin" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+          <i class="fas fa-arrow-left mr-1"></i>Voltar para o início
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto px-4 py-8 fade-in">
+    <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md border border-gray-200">
+      <h2 class="text-2xl font-bold text-dark mb-6 text-center">Gerenciar Usuários</h2>
+      <div class="container mx-auto px-4 py-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="space-y-4">
+              {% for category, message in messages %}
+                <div class="alert {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }} p-4 rounded-md">
+                  <strong>{{ message }}</strong>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+      <!-- Formulário -->
+      <form method="post" onsubmit="return validarFormulario()" class="grid gap-4 mb-8">
+        <!-- Campo Nome do Usuário -->
+        <div>
+          <label for="nome_usuario" class="block text-gray-700 font-semibold mb-2">Nome do Usuário:</label>
+          <input type="text" name="nome_usuario" id="nome_usuario" placeholder="Novo usuário"
+                 class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full" required>
+        </div>
+
+        <!-- Campo CPF -->
+        <div>
+          <label for="cpf" class="block text-gray-700 font-semibold mb-2">CPF:</label>
+          <input type="text" name="cpf" id="cpf" placeholder="XXX.XXX.XXX-XX"
+                class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full" required>
+          <!-- Campo CPF oculto -->
+          <input type="hidden" name="cpf_hidden" id="cpf_hidden">
+        </div>
+
+
+        <!-- Campo Senha -->
+        <div>
+          <label for="senha" class="block text-gray-700 font-semibold mb-2">Senha:</label>
+          <input type="password" name="senha" id="senha" placeholder="Senha"
+                 class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full" required>
+        </div>
+
+        <!-- Campo Confirmar Senha -->
+        <div>
+          <label for="confirmar_senha" class="block text-gray-700 font-semibold mb-2">Confirmar Senha:</label>
+          <input type="password" name="confirmar_senha" id="confirmar_senha" placeholder="Confirme a senha"
+                 class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full" required>
+        </div>
+
+        <!-- Campo Papel -->
+        <div>
+          <label for="papel" class="block text-gray-700 font-semibold mb-2">Papel:</label>
+          <select name="papel" id="papel" onchange="toggleCPF()"
+                  class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary w-full">
+            <option value="admin">Admin</option>
+            <option value="auditor">Auditor</option>
+          </select>
+        </div>
+
+        <!-- Botão Submeter -->
+        <div>
+          <input type="submit" value="Adicionar"
+                 class="bg-secondary hover:bg-blue-600 text-white font-medium px-6 py-2 rounded-lg transition duration-200 cursor-pointer w-full">
+        </div>
+      </form>
+
+      <!-- Lista de usuários -->
+      <ul class="space-y-4">
+        {% for usuario in usuarios %}
+          <li class="flex items-center justify-between bg-gray-100 px-4 py-2 rounded-lg">
+            <span class="text-dark font-medium">{{ usuario[1] }} - {{ usuario[2] }}</span>
+            <a href="/excluir_usuario/{{ usuario[0] }}"
+               class="text-accent hover:underline font-semibold">Remover</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t text-gray-800 py-6">
+    <div class="container mx-auto px-4 text-center text-sm">
+      <p>© 2025 RN GUARD - Sistema de Auditoria</p>
+    </div>
+  </footer>
+</body>
+</html>

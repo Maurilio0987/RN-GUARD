@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enviar Documento - Auditor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ffffff',
+            secondary: '#2563eb',
+            light: '#ecf0f1',
+            dark: '#2c3e50',
+            accent: '#e74c3c',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <header class="bg-white shadow-lg border-b">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-shield-alt text-2xl text-secondary"></i>
+        <h1 class="text-2xl font-bold text-gray-800">RN GUARD - Auditor</h1>
+      </div>
+      <div class="mt-6 text-center">
+        <a href="/dashboard/auditor" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+          <i class="fas fa-arrow-left mr-1"></i>Voltar para o início
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main class="container mx-auto px-4 py-10">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8">
+      <h2 class="text-2xl font-bold text-dark mb-6">Enviar Documento</h2>
+
+      <!-- Flash messages -->
+      {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+          <ul class="mb-6 space-y-4">
+            {% for categoria, mensagem in mensagens %}
+              <li class="p-4 rounded-lg border
+                         {% if categoria == 'success' %}
+                             bg-green-100 text-green-800 border-green-300
+                         {% elif categoria == 'error' %}
+                             bg-red-100 text-red-800 border-red-300
+                         {% else %}
+                             bg-blue-100 text-blue-800 border-blue-300
+                         {% endif %}">
+                {{ mensagem }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <form action="/dashboard/auditor/enviar_documento" method="post" enctype="multipart/form-data" class="space-y-4">
+        <div>
+          <label for="nome_personalizado" class="block text-sm font-medium text-gray-700">Nome do arquivo (opcional)</label>
+          <input type="text" name="nome_personalizado" id="nome_personalizado"
+                 class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-secondary focus:border-secondary"
+                 placeholder="Ex: Relatório_Junho">
+        </div>
+
+        <div>
+          <label for="arquivo" class="block text-sm font-medium text-gray-700">Selecione um arquivo</label>
+          <input type="file" name="arquivo" id="arquivo" required
+                 class="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md p-2 shadow-sm bg-white">
+        </div>
+
+        <div>
+          <label for="categoria" class="block text-sm font-medium text-gray-700">Categoria do documento</label>
+          <select name="categoria" id="categoria" required
+                  class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-secondary focus:border-secondary">
+            <option value="">Selecione uma categoria</option>
+            <option value="Receitas">Receitas</option>
+            <option value="Despesas">Despesas</option>
+            <option value="Relatórios Contábeis">Relatórios Contábeis</option>
+            <option value="Orçamento do Município">Orçamento do Município</option>
+            <option value="Licitações e Contratos">Licitações e Contratos</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="data_documento" class="block text-sm font-medium text-gray-700">Data do documento</label>
+          <input type="date" name="data_documento" id="data_documento" required
+                 class="mt-1 block w-full border border-gray-300 rounded-md p-2 shadow-sm focus:ring-secondary focus:border-secondary">
+        </div>
+
+        <button type="submit"
+                class="mt-4 w-full bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+          <i class="fas fa-upload mr-2"></i>Enviar Documento
+        </button>
+      </form>
+
+      
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t text-gray-800 py-6 mt-10">
+    <div class="container mx-auto px-4 text-center">
+      <p class="text-sm">© 2025 RN Guard. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+</body>
+</html>
